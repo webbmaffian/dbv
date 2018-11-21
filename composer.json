@@ -1,11 +1,24 @@
 {
     "name": "webbmaffian/dbv",
-    "license": "MIT",
+	"license": "MIT",
+	"description": "Database versioning for webbmaffian/orm",
     "authors": [
         {
             "name": "Mattias Forsman",
             "email": "mattias@webbmaffian.se"
         }
-    ],
-    "require": {}
+	],
+	"autoload": {
+		"psr-4": {
+			"Webbmaffian\\DBV\\": "src/"
+		}
+	},
+	"config": {
+		"classmap-authoritative": true
+	},
+    "require": {
+		"php": "^7.0.0",
+		"ext-mysqli": "*",
+		"webbmaffian/orm": "^1.0.0"
+	}
 }
