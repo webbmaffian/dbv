@@ -1,0 +1,11 @@
+{
+    "name": "webbmaffian/dbv",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mattias Forsman",
+            "email": "mattias@webbmaffian.se"
+        }
+    ],
+    "require": {}
+}
