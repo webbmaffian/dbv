@@ -19,6 +19,6 @@
     "require": {
 		"php": "^7.0.0",
 		"ext-mysqli": "*",
-		"webbmaffian/orm": "^1.0.0"
+		"webbmaffian/orm": "*"
 	}
 }
