@@ -2,6 +2,8 @@
 
 namespace Webbmaffian\DBV;
 
+use Webbmaffian\DBV\Helper\Uuid;
+
 class DBV {
 
 	protected $db = null;

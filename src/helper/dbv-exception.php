@@ -1,6 +1,6 @@
 <?php
 
-namespace Webbmaffian\DBV\Helpers;
+namespace Webbmaffian\DBV\Helper;
 
 class DBV_Exception extends \Exception {
 
