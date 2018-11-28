@@ -1,6 +1,6 @@
 <?php
 
-namespace OfficeERP;
+namespace Webbmaffian\DBV;
 
 class DBV {
 
