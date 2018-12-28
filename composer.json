@@ -1,12 +1,16 @@
 {
-    "name": "webbmaffian/dbv",
-	"license": "MIT",
+	"name": "webbmaffian/dbv",
+	"license": "proprietary",
 	"description": "Database versioning for webbmaffian/orm",
-    "authors": [
-        {
-            "name": "Mattias Forsman",
-            "email": "mattias@webbmaffian.se"
-        }
+	"authors": [
+		{
+			"name": "Mattias Forsman",
+			"email": "mattias@webbmaffian.se"
+		},
+		{
+			"name": "Ivar Johansson",
+			"email": "ivar@webbmaffian.se"
+		}
 	],
 	"autoload": {
 		"psr-4": {
@@ -16,9 +20,9 @@
 	"config": {
 		"classmap-authoritative": true
 	},
-    "require": {
+	"require": {
 		"php": "^7.0.0",
 		"ext-mysqli": "*",
-		"webbmaffian/orm": "*"
+		"webbmaffian/orm": "^1.1.0"
 	}
 }
