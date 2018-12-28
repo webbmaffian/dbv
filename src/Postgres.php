@@ -102,8 +102,11 @@ class Postgres extends DBV {
 		$result = $this->db->query('
 			SELECT column_name, data_type, character_maximum_length, is_nullable, column_default
 			FROM information_schema.columns
-			WHERE table_name = $1 AND table_schema = $2
-		', $table, $this->schema);
+			WHERE table_name = :table AND table_schema = :schema
+		', array(
+			'table' => $table,
+			'schema' => $this->schema
+		));
 
 		while($row = $result->fetch_assoc()) {
 			if(strpos($row['column_default'], $this->schema) !== false) {
@@ -113,7 +116,7 @@ class Postgres extends DBV {
 			$columns[$row['column_name']] = array(
 				'type' => $row['data_type'],
 				'max_len' => $row['character_maximum_length'],
-				'null' => $row['is_nullable'] === "YES" ? true : false,
+				'null' => $row['is_nullable'] === 'YES' ? true : false,
 				'default' => $row['column_default']
 			);
 		}
@@ -186,8 +189,10 @@ class Postgres extends DBV {
 			FROM pg_catalog.pg_proc p
 			JOIN pg_catalog.pg_roles u ON u.oid = p.proowner
 			LEFT JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
-			WHERE pg_catalog.pg_function_is_visible(p.oid) AND n.nspname = $1 AND u.rolname = current_user
-		', $this->schema);
+			WHERE pg_catalog.pg_function_is_visible(p.oid) AND n.nspname = :schema AND u.rolname = current_user
+		', array(
+			'schema' => $this->schema
+		));
 
 		while($row = $result->fetch_assoc()) {
 			$functions[$row['name']] = preg_replace('/FUNCTION [^\.\s]+\./', 'FUNCTION ', $row['def']);
@@ -198,6 +203,6 @@ class Postgres extends DBV {
 
 
 	protected function prepare_comment($table, $comment) {
-		return $this->db->prepare('COMMENT ON TABLE ' . $this->schema . '.' . $table . ' IS "' . $comment . '"');
+		return $this->db->prepare('COMMENT ON TABLE ' . $this->schema . '.' . $table . ' IS ' . $this->db->escape_string($comment, true));
 	}
 }
