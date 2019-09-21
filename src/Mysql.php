@@ -178,6 +178,6 @@ class Mysql extends DBV {
 
 
 	protected function prepare_comment($table, $comment) {
-		return $this->db->prepare('ALTER TABLE ' . $table . ' COMMENT "' . $comment . '"');
+		return $this->db->prepare('ALTER TABLE ' . $table . ' COMMENT ' . $this->db->escape_string($comment, true));
 	}
 }
