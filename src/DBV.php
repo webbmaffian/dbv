@@ -188,10 +188,13 @@ abstract class DBV {
 		}
 
 		// Drop deleted columns
-		$new_keys = array_keys($new_columns);
-		$old_keys = array_keys($old_columns);
-		foreach(array_diff($old_keys, $new_keys) as $name) {
-			if($this->drop_allowed) {
+		if($this->drop_allowed) {
+			$new_keys = array_keys($new_columns);
+			$old_keys = array_keys($old_columns);
+
+			foreach(array_diff($old_keys, $new_keys) as $name) {
+				if(empty($name)) continue;
+				
 				trigger_error('DROPing column ' . $name, E_USER_WARNING);
 				$this->changes[] = $this->db->prepare('ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $name);
 				$has_changed = true;
