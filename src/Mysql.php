@@ -87,6 +87,8 @@ class Mysql extends DBV {
 		$result = $this->db->query($query, array('schema' => $this->schema));
 
 		while($row = $result->fetch_assoc()) {
+			$row = array_change_key_case($row);
+
 			$tables[$row['name']] = $row['comment'];
 		}
 
@@ -104,6 +106,8 @@ class Mysql extends DBV {
 		$result = $this->db->query($query, array('table' => $table, 'schema' => $this->schema));
 
 		while($row = $result->fetch_assoc()) {
+			$row = array_change_key_case($row);
+
 			$columns[$row['column_name']] = array(
 				'type' => $row['column_type'],
 				'null' => $row['is_nullable'] === 'YES' ? true : false,
@@ -130,6 +134,8 @@ class Mysql extends DBV {
 		$result = $this->db->query($query, array('table' => $table, 'schema' => $this->schema));
 
 		while($row = $result->fetch_assoc()) {
+			$row = array_change_key_case($row);
+			
 			if(!isset($temp_indexes[$row['index_name']])) {
 				if($row['index_name'] === 'PRIMARY') {
 					$type = 'PRIMARY';
@@ -178,6 +184,6 @@ class Mysql extends DBV {
 
 
 	protected function prepare_comment($table, $comment) {
-		return $this->db->prepare('ALTER TABLE ' . $table . ' COMMENT "' . $comment . '"');
+		return $this->db->prepare('ALTER TABLE ' . $table . ' COMMENT ' . $this->db->escape_string($comment, true));
 	}
 }
