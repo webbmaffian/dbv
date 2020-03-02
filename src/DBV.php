@@ -2,6 +2,7 @@
 
 namespace Webbmaffian\DBV;
 
+use Webbmaffian\DBV\Helper\DBV_Exception;
 use Webbmaffian\ORM\Interfaces\Database;
 use Webbmaffian\DBV\Helper\Uuid;
 
