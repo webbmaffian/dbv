@@ -99,6 +99,7 @@ abstract class DBV {
 
 		foreach($new_db['tables'] as $uuid => $new_table) {
 			$has_changed = false;
+			$old_indexes = null;
 
 			// Is table new or renamed?
 			if(isset($local_tables[$uuid])) {
@@ -108,10 +109,11 @@ abstract class DBV {
 				}
 
 				$has_changed = $this->check_columns($local_tables[$uuid], $new_table);
+				$old_indexes = $local_tables[$uuid]['indexes'];
 				
 				// Has only indexes changed?
 				if(isset($local_tables[$uuid])) {
-					if(!empty(array_diff_assoc($new_table['indexes'], $local_tables[$uuid]['indexes'])) || (count($new_table['indexes']) !== count($local_tables[$uuid]['indexes']))) {
+					if(!empty(array_diff_assoc($new_table['indexes'], $old_indexes)) || (count($new_table['indexes']) !== count($old_indexes))) {
 						$has_changed = true;
 					} 
 				}
@@ -121,7 +123,7 @@ abstract class DBV {
 			}
 
 			// If a change has been made to a table or column indexes needs to be recreated
-			if($has_changed) $this->change_indexes($new_table['name'], $local_tables[$uuid]['indexes'], $new_table['indexes']);
+			if($has_changed) $this->change_indexes($new_table['name'], $old_indexes, $new_table['indexes']);
 		}
 
 		// Check functions
