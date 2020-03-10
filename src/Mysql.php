@@ -155,6 +155,8 @@ class Mysql extends DBV {
 		}
 
 		foreach($temp_indexes as $name => $values) {
+			ksort($values['columns'], SORT_NUMERIC);
+			
 			if($values['type'] === 'PRIMARY') {
 				$def = 'ALTER TABLE ' . $table . ' ADD PRIMARY KEY (' . implode(', ', $values['columns']) . ')';
 			} else {
