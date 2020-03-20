@@ -11,6 +11,7 @@ abstract class DBV {
 	protected $schema;
 	protected $changes = array();
 	protected $drop_allowed = false;
+	protected $collation = null;
 
 
 	abstract protected function change_indexes($table, $old_indexes, $new_indexes);
@@ -50,6 +51,22 @@ abstract class DBV {
 		$this->db = $db;
 		$this->schema = $db->get_schema();
 		$this->drop_allowed = $drop_allowed;
+	}
+
+
+	public function set_collation($collation, $charset = null) {
+		if(!preg_match('/^[a-z0-9_]+$/', $collation)) {
+			throw new DBV_Exception('Invalid collation.');
+		}
+
+		if(is_null($charset)) {
+			$charset = strtok($collation, '_');
+		}
+		elseif(!preg_match('/^[a-z0-9_]+$/', $charset)) {
+			throw new DBV_Exception('Invalid collation.');
+		}
+
+		$this->collation = [$charset, $collation];
 	}
 
 
@@ -210,6 +227,10 @@ abstract class DBV {
 
 	protected function create_table(string $uuid, array $table) {
 		$query = 'CREATE TABLE ' . $table['name'] . ' (' . $this->add_columns_to_query($table['columns'], $table['name']) . ')';
+
+		if($this->collation) {
+			$query .= sprintf(' CHARACTER SET %s COLLATE %s', ...$this->collation);
+		}
 
 		$this->changes[] = $this->db->prepare($query);
 		$this->changes[] = $this->prepare_comment($table['name'], $uuid);
