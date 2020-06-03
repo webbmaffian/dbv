@@ -61,6 +61,16 @@ class Postgres extends DBV {
 	}
 
 
+	protected function drop_foreign_keys($table, $foreign_keys) {
+		// Not implemented yet
+	}
+
+
+	protected function add_foreign_keys($table, $foreign_keys) {
+		// Not implemented yet
+	}
+
+
 	// Checks for auto increment sequences and prepares them for creation
 	protected function generate_default($default) {
 		if(is_null($default)) return null;
@@ -178,6 +188,12 @@ class Postgres extends DBV {
 		}
 
 		return $indexes;
+	}
+
+
+	// Not implemented yet
+	protected function get_table_foreign_keys($table) {
+		return [];
 	}
 
 

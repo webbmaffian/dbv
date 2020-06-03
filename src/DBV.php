@@ -24,6 +24,9 @@ abstract class DBV {
 	abstract protected function get_table_uuids();
 	abstract protected function get_table_columns($table);
 	abstract protected function get_table_indexes($table);
+	abstract protected function get_table_foreign_keys($table);
+	abstract protected function drop_foreign_keys($table, $foreign_keys);
+	abstract protected function add_foreign_keys($table, $foreign_keys);
 
 
 	// This function returns a new instance of the correct DBV class
@@ -127,12 +130,16 @@ abstract class DBV {
 
 				$has_changed = $this->check_columns($local_tables[$uuid], $new_table);
 				$old_indexes = $local_tables[$uuid]['indexes'];
+				$old_foreign_keys = $local_tables[$uuid]['foreign_keys'];
 				
-				// Has only indexes changed?
+				// Has only indexes and/or foreign keys changed?
 				if(isset($local_tables[$uuid])) {
 					if(!empty(array_diff_assoc($new_table['indexes'], $old_indexes)) || (count($new_table['indexes']) !== count($old_indexes))) {
 						$has_changed = true;
-					} 
+					}
+					elseif(!empty(array_diff_assoc($new_table['foreign_keys'], $old_foreign_keys)) || (count($new_table['foreign_keys']) !== count($old_foreign_keys))) {
+						$has_changed = true;
+					}
 				}
 			} else {
 				$this->create_table($uuid, $new_table);
@@ -140,7 +147,11 @@ abstract class DBV {
 			}
 
 			// If a change has been made to a table or column indexes needs to be recreated
-			if($has_changed) $this->change_indexes($new_table['name'], $old_indexes, $new_table['indexes']);
+			if($has_changed) {
+				$this->drop_foreign_keys($new_table['name'], $old_foreign_keys);
+				$this->change_indexes($new_table['name'], $old_indexes, $new_table['indexes']);
+				$this->add_foreign_keys($new_table['name'], $new_table['foreign_keys']);
+			}
 		}
 
 		// Check functions
@@ -284,7 +295,8 @@ abstract class DBV {
 		return array(
 			'name' => $table,
 			'columns' => $this->get_table_columns($table),
-			'indexes' => $this->get_table_indexes($table)
+			'indexes' => $this->get_table_indexes($table),
+			'foreign_keys' => $this->get_table_foreign_keys($table)
 		);
 	}
 

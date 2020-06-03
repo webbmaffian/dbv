@@ -70,6 +70,20 @@ class Mysql extends DBV {
 	}
 
 
+	protected function drop_foreign_keys($table, $foreign_keys) {
+		foreach(array_keys($foreign_keys) as $name) {
+			$this->changes[] = $this->db->prepare(sprintf('ALTER TABLE %s DROP FOREIGN KEY %s', $table, $name));
+		}
+	}
+
+
+	protected function add_foreign_keys($table, $foreign_keys) {
+		foreach($foreign_keys as $definition) {
+			$this->changes[] = $this->db->prepare($definition);
+		}
+	}
+
+
 	protected function generate_default($default) {
 		return !empty($default) ? 'DEFAULT ' . $default : '';
 	}
@@ -167,6 +181,56 @@ class Mysql extends DBV {
 		}
 
 		return $indexes;
+	}
+
+
+	// We only support one-column foreign keys right now
+	protected function get_table_foreign_keys($table) {
+		$query = '
+			SELECT
+				referential_constraints.constraint_name,
+				key_column_usage.column_name,
+				key_column_usage.referenced_table_name,
+				key_column_usage.referenced_column_name,
+				referential_constraints.update_rule,
+				referential_constraints.delete_rule
+
+			FROM information_schema.referential_constraints
+
+			LEFT JOIN information_schema.key_column_usage USING (constraint_schema, constraint_name)
+
+			WHERE referential_constraints.constraint_schema = :schema
+			AND key_column_usage.table_name = :table
+			AND key_column_usage.referenced_table_schema = key_column_usage.constraint_schema
+
+			GROUP BY referential_constraints.constraint_name
+
+			ORDER BY constraint_name
+		';
+
+		$result = $this->db->query($query, [
+			'table' => $table,
+			'schema' => $this->schema
+		]);
+
+		$foreign_keys = [];
+
+		while($row = $result->fetch_assoc()) {
+			$row = array_change_key_case($row);
+
+			$foreign_keys[$row['constraint_name']] = sprintf(
+				'ALTER TABLE %s ADD FOREIGN KEY %s (%s) REFERENCES %s (%s) ON DELETE %s ON UPDATE %s',
+				$table,
+				$row['constraint_name'],
+				$row['column_name'],
+				$row['referenced_table_name'],
+				$row['referenced_column_name'],
+				$row['delete_rule'],
+				$row['update_rule']
+			);
+		}
+
+		return $foreign_keys;
 	}
 
 
