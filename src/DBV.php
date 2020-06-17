@@ -121,6 +121,11 @@ abstract class DBV {
 			$has_changed = false;
 			$old_indexes = null;
 
+			// Backwards compatibility
+			if(!isset($new_table['foreign_keys'])) {
+				$new_table['foreign_keys'] = [];
+			}
+
 			// Is table new or renamed?
 			if(isset($local_tables[$uuid])) {
 				if($new_table['name'] !== $local_tables[$uuid]['name']) {
@@ -130,7 +135,7 @@ abstract class DBV {
 
 				$has_changed = $this->check_columns($local_tables[$uuid], $new_table);
 				$old_indexes = $local_tables[$uuid]['indexes'];
-				$old_foreign_keys = $local_tables[$uuid]['foreign_keys'];
+				$old_foreign_keys = $local_tables[$uuid]['foreign_keys'] ?? [];
 				
 				// Has only indexes and/or foreign keys changed?
 				if(isset($local_tables[$uuid])) {
