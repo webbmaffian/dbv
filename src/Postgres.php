@@ -173,7 +173,7 @@ class Postgres extends DBV {
 						break;
 					default:
 						trigger_error('Constraint type not supported.', E_USER_WARNING);
-						continue;
+						continue 2;
 				}
 
 				$cols = substr($row['indexdef'], strrpos($row['indexdef'], '('));
