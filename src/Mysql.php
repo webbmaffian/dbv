@@ -21,6 +21,20 @@ class Mysql extends DBV {
 	}
 
 
+	protected function create_table(string $uuid, array $table) {
+		$query = 'CREATE TABLE ' . $table['name'] . ' (' . $this->add_columns_to_query($table['columns'], $table['name']) . ')';
+
+		if($this->collation) {
+			$query .= sprintf(' CHARACTER SET %s COLLATE %s', ...$this->collation);
+		}
+
+		$this->changes[] = $this->db->prepare($query);
+		$this->changes[] = $this->prepare_comment($table['name'], $uuid);
+
+		return true;
+	}
+
+
 	protected function add_columns_to_query($new_columns, $table = null) {
 		$columns = array();
 		

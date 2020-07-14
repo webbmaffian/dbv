@@ -16,6 +16,16 @@ class Postgres extends DBV {
 	}
 
 
+	protected function create_table(string $uuid, array $table) {
+		$query = 'CREATE TABLE ' . $table['name'] . ' (' . $this->add_columns_to_query($table['columns'], $table['name']) . ')';
+
+		$this->changes[] = $this->db->prepare($query);
+		$this->changes[] = $this->prepare_comment($table['name'], $uuid);
+
+		return true;
+	}
+
+
 	protected function change_column($column_name, $table_name, $fields = array(), $default = '', $extra = '') {
 		$this->changes[] = $this->db->prepare('ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' TYPE ' . $fields['type'] . (!is_null($fields['max_len']) ? ' (' . $fields['max_len'] . ')': ''));
 		$this->changes[] = $this->db->prepare('ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' ' . ($fields['null'] ? ' DROP NOT NULL' : ' SET NOT NULL'));

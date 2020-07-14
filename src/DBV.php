@@ -16,6 +16,7 @@ abstract class DBV {
 
 	abstract protected function change_indexes($table, $old_indexes, $new_indexes);
 	abstract protected function rename_table($old_name, $new_name);
+	abstract protected function create_table(string $uuid, array $table);
 	abstract protected function change_column($column_name, $table_name, $fields = array(), $default = '', $extra = '');
 	abstract protected function rename_column($old_name, $new_name, $table_name, $fields = array(), $default = '', $extra = '');
 	abstract protected function add_columns_to_query($new_columns, $table = null);
@@ -238,20 +239,6 @@ abstract class DBV {
 		}
 
 		return $has_changed;
-	}
-
-
-	protected function create_table(string $uuid, array $table) {
-		$query = 'CREATE TABLE ' . $table['name'] . ' (' . $this->add_columns_to_query($table['columns'], $table['name']) . ')';
-
-		if($this->collation) {
-			$query .= sprintf(' CHARACTER SET %s COLLATE %s', ...$this->collation);
-		}
-
-		$this->changes[] = $this->db->prepare($query);
-		$this->changes[] = $this->prepare_comment($table['name'], $uuid);
-
-		return true;
 	}
 
 
