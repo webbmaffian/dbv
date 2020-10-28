@@ -27,7 +27,7 @@ class Postgres extends DBV {
 
 
 	protected function change_column($column_name, $table_name, $fields = array(), $default = '', $extra = '') {
-		$this->changes[] = $this->db->prepare('ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' TYPE ' . $fields['type'] . (!is_null($fields['max_len']) ? ' (' . $fields['max_len'] . ')': '') . (!is_null($fields['collation']) ? ' COLLATE ' . $fields['collation'] : ''));
+		$this->changes[] = $this->db->prepare('ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' TYPE ' . $fields['type'] . (!is_null($fields['max_len']) ? (' (' . $fields['max_len'] . ')'): '') . (!is_null($fields['collation']) ? (' COLLATE "' . $fields['collation'] . '"') : ''));
 		$this->changes[] = $this->db->prepare('ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' ' . ($fields['null'] ? ' DROP NOT NULL' : ' SET NOT NULL'));
 		
 		if($default) {
