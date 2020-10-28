@@ -27,7 +27,7 @@ class Postgres extends DBV {
 
 
 	protected function change_column($column_name, $table_name, $fields = array(), $default = '', $extra = '') {
-		$this->changes[] = $this->db->prepare('ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' TYPE ' . $fields['type'] . (!is_null($fields['max_len']) ? ' (' . $fields['max_len'] . ')': ''));
+		$this->changes[] = $this->db->prepare('ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' TYPE ' . $fields['type'] . (!is_null($fields['max_len']) ? ' (' . $fields['max_len'] . ')': '') . (!is_null($fields['collation']) ? ' COLLATE ' . $fields['collation'] : ''));
 		$this->changes[] = $this->db->prepare('ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' ' . ($fields['null'] ? ' DROP NOT NULL' : ' SET NOT NULL'));
 		
 		if($default) {
@@ -120,7 +120,7 @@ class Postgres extends DBV {
 	protected function get_table_columns($table) {
 		$columns = array();
 		$result = $this->db->query('
-			SELECT column_name, data_type, character_maximum_length, is_nullable, column_default
+			SELECT column_name, data_type, character_maximum_length, is_nullable, column_default, collation_name
 			FROM information_schema.columns
 			WHERE table_name = :table AND table_schema = :schema
 		', array(
@@ -136,6 +136,7 @@ class Postgres extends DBV {
 			$columns[$row['column_name']] = array(
 				'type' => $row['data_type'],
 				'max_len' => $row['character_maximum_length'],
+				'collation' => $row['collation_name'],
 				'null' => $row['is_nullable'] === 'YES' ? true : false,
 				'default' => $row['column_default']
 			);
