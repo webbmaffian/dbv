@@ -99,7 +99,7 @@ class Mysql extends DBV {
 
 
 	protected function generate_default($default) {
-		return !empty($default) ? 'DEFAULT ' . $default : '';
+		return ($default !== '' ? 'DEFAULT ' . $default : '');
 	}
 
 
