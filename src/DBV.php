@@ -121,6 +121,7 @@ abstract class DBV {
 		foreach($new_db['tables'] as $uuid => $new_table) {
 			$has_changed = false;
 			$old_indexes = null;
+			$old_foreign_keys = [];
 
 			// Backwards compatibility
 			if(!isset($new_table['foreign_keys'])) {
