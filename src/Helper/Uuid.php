@@ -24,11 +24,6 @@ class Uuid {
 	}
 	
 
-	public static function equals($uuid1, $uuid2) {
-        return self::getBytes($uuid1) === self::getBytes($uuid2);
-    }
-	
-
 	public static function get() {
         $bytes = function_exists('random_bytes') ? random_bytes(16) : openssl_random_pseudo_bytes(16);
         $hash = bin2hex($bytes);

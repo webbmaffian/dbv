@@ -218,7 +218,10 @@ abstract class DBV {
 				// Add new column
 				if($renamed) {
 					$old_columns[$name] = $new_columns[$name];
-					unset($old_columns[$old_name]);
+
+					if(isset($old_name, $old_columns[$old_name])) {
+						unset($old_columns[$old_name]);
+					}
 				} else {
 					$this->changes[] = $this->db->prepare('ALTER TABLE ' . $table_name . ' ADD COLUMN ' . $this->add_columns_to_query(array($name => $fields), $table_name));
 				}
@@ -305,13 +308,15 @@ abstract class DBV {
 		$scheme = $this->get_dumped_scheme($filepath);
 		$tables = $this->get_table_uuids();
 
-		foreach($scheme['tables'] as $uuid => $table) {
-			if(!isset($tables[$table['name']])) {
-				continue;
-			}
-
-			if($tables[$table['name']] !== $uuid) {
-				$this->changes[] = $this->prepare_comment($table['name'], $uuid);
+		if(!empty($scheme) && is_array($scheme)) {
+			foreach($scheme['tables'] as $uuid => $table) {
+				if(!isset($tables[$table['name']])) {
+					continue;
+				}
+	
+				if($tables[$table['name']] !== $uuid) {
+					$this->changes[] = $this->prepare_comment($table['name'], $uuid);
+				}
 			}
 		}
 
